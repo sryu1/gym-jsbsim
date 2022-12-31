@@ -14,7 +14,8 @@ class TestFigureVisualiser(unittest.TestCase):
     def setUp(self, plot_position=True):
         self.sim = DefaultSimStub()
         task = BasicFlightTask()
-        self.visualiser = FigureVisualiser(DefaultSimStub(), task.get_props_to_output())
+        self.visualiser = FigureVisualiser(
+            DefaultSimStub(), task.get_props_to_output())
 
     def tearDown(self):
         self.visualiser.close()
@@ -25,7 +26,8 @@ class TestFigureVisualiser(unittest.TestCase):
         self.visualiser.plot(self.sim)
 
         self.assertIsInstance(self.visualiser.figure, plt.Figure)
-        self.assertIsInstance(self.visualiser.axes, gym_jsbsim.visualiser.AxesTuple)
+        self.assertIsInstance(self.visualiser.axes,
+                              gym_jsbsim.visualiser.AxesTuple)
 
     def test_plot_doesnt_plot_position_when_set_by_init(self):
         self.setUp(plot_position=False)
@@ -33,7 +35,8 @@ class TestFigureVisualiser(unittest.TestCase):
         self.visualiser.plot(self.sim)
 
         position_axis = self.visualiser.axes.axes_state
-        is_empty_plot = position_axis is None or len(position_axis.axes.lines) == 0
+        is_empty_plot = position_axis is None or len(
+            position_axis.axes.lines) == 0
         self.assertTrue(is_empty_plot)
 
     def test_plot_plots_control_state(self):
@@ -88,7 +91,8 @@ class TestFlightGearVisualiser(unittest.TestCase):
         time.sleep(0.5)
 
         # check FlightGear has launched by looking at stdout
-        self.assertIn('FlightGear', self.flightgear.flightgear_process.stdout.readline().decode())
+        self.assertIn(
+            'FlightGear', self.flightgear.flightgear_process.stdout.readline().decode())
         self.flightgear.close()
 
     def test_close_closes_flightgear(self):
@@ -96,7 +100,8 @@ class TestFlightGearVisualiser(unittest.TestCase):
                                                block_until_loaded=False)
         self.flightgear.close()
         timeout_seconds = 2.0
-        return_code = self.flightgear.flightgear_process.wait(timeout=timeout_seconds)
+        return_code = self.flightgear.flightgear_process.wait(
+            timeout=timeout_seconds)
         # a non-None return code indicates termination
         self.assertIsNotNone(return_code)
 

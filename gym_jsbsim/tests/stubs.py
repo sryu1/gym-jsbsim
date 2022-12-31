@@ -20,8 +20,10 @@ class AssessorStub(Assessor):
 
 class FlightTaskStub(FlightTask):
     """ A minimal Task for testing. """
-    test_property1 = prp.BoundedProperty('test_property1', 'dummy property for testing', -1, 1)
-    test_property2 = prp.BoundedProperty('test_property2', 'dummy property for testing', -1, 1)
+    test_property1 = prp.BoundedProperty(
+        'test_property1', 'dummy property for testing', -1, 1)
+    test_property2 = prp.BoundedProperty(
+        'test_property2', 'dummy property for testing', -1, 1)
 
     def __init__(self, *_):
         self.state_variables = (self.test_property1, self.test_property2)
@@ -43,19 +45,22 @@ class FlightTaskStub(FlightTask):
 
     @staticmethod
     def get_dummy_state_class_and_properties(length: int):
-        dummy_properties = tuple(prp.Property('test_prop' + str(i), '') for i in range(length))
-        DummyState = collections.namedtuple('DummyState', [prop.name for prop in dummy_properties])
+        dummy_properties = tuple(prp.Property(
+            'test_prop' + str(i), '') for i in range(length))
+        DummyState = collections.namedtuple(
+            'DummyState', [prop.name for prop in dummy_properties])
         return DummyState, dummy_properties
 
     @staticmethod
     def get_dummy_state_and_properties(values: Iterable[float]) -> Tuple[
-        NamedTuple, Tuple[prp.Property, ...]]:
+            NamedTuple, Tuple[prp.Property, ...]]:
         """
         given a collection of floats, creates dummy Properties for each value
         and inits a State
         """
         values_safe = tuple(values)
-        DummyState, props = FlightTaskStub.get_dummy_state_class_and_properties(len(values_safe))
+        DummyState, props = FlightTaskStub.get_dummy_state_class_and_properties(
+            len(values_safe))
         return DummyState(*values_safe), props
 
     def _reward_terminal_override(self, reward: rewards.Reward, sim: Simulation):
@@ -67,7 +72,8 @@ class BasicFlightTask(FlightTask):
 
     def __init__(self, *_):
         self.state_variables = super().base_state_variables
-        self.action_variables = (prp.aileron_cmd, prp.rudder_cmd, prp.elevator_cmd)
+        self.action_variables = (
+            prp.aileron_cmd, prp.rudder_cmd, prp.elevator_cmd)
         super().__init__(AssessorStub())
 
     def _is_terminal(self, _: Simulation) -> bool:
@@ -138,8 +144,10 @@ class SimStub(object):
             typical_value = (prop.min + prop.max) / 2
             sim[prop] = typical_value
         sim[prp.sim_time_s] = 1.0
-        sim[prp.lat_geod_deg] = task.get_initial_conditions()[prp.initial_latitude_geod_deg]
-        sim[prp.lng_geoc_deg] = task.get_initial_conditions()[prp.initial_longitude_geoc_deg]
+        sim[prp.lat_geod_deg] = task.get_initial_conditions()[
+            prp.initial_latitude_geod_deg]
+        sim[prp.lng_geoc_deg] = task.get_initial_conditions()[
+            prp.initial_longitude_geoc_deg]
         sim[prp.dist_travel_m] = 2.0
         sim[prp.heading_deg] = 270
         sim[prp.v_north_fps] = 0

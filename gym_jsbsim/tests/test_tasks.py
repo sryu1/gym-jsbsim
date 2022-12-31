@@ -25,9 +25,11 @@ class TestHeadingControlTask(unittest.TestCase):
     def setUp(self):
         self.task = self.make_task()
         sim = SimStub.make_valid_state_stub(self.task)
-        _ = self.task.observe_first_state(sim)  # causes task to init new-episode attributes
+        # causes task to init new-episode attributes
+        _ = self.task.observe_first_state(sim)
 
-        self.dummy_action = np.asarray([0 for _ in range(len(self.task.action_variables))])
+        self.dummy_action = np.asarray(
+            [0 for _ in range(len(self.task.action_variables))])
 
     def get_class_under_test(self):
         return HeadingControlTask
@@ -64,7 +66,8 @@ class TestHeadingControlTask(unittest.TestCase):
                                                         altitude_ft, roll_rad)
         # the task set its last_state attr when it observed the first state - reset this
         #   based on the perfect sim values we just set. Ugh.
-        perfect_state = task.State(*(sim[prop] for prop in task.state_variables))
+        perfect_state = task.State(*(sim[prop]
+                                   for prop in task.state_variables))
         task.last_state = perfect_state
         return perfect_initial_sim
 
@@ -107,7 +110,8 @@ class TestHeadingControlTask(unittest.TestCase):
         sim[prp.sim_time_s] = 0.0
         sim[prp.dist_travel_m] = 0.0
         sim[prp.heading_deg] = task.INITIAL_HEADING_DEG
-        sim[prp.altitude_sl_ft] = task.get_initial_conditions()[prp.initial_altitude_ft]
+        sim[prp.altitude_sl_ft] = task.get_initial_conditions()[
+            prp.initial_altitude_ft]
         sim[prp.roll_rad] = 0
         return sim
 
@@ -135,7 +139,8 @@ class TestHeadingControlTask(unittest.TestCase):
         The first state is as configured by the input task.
         The second state's altitude, distance traveled, heading etc. changes as per inputs.
          """
-        initial_state_sim = self.get_initial_sim_with_state(task, time_terminal=False)
+        initial_state_sim = self.get_initial_sim_with_state(
+            task, time_terminal=False)
         target_track = initial_state_sim[self.task.target_track_deg]
         track_deg = target_track + track_error_deg
         next_state_sim = initial_state_sim.copy()
@@ -207,8 +212,10 @@ class TestHeadingControlTask(unittest.TestCase):
         _ = self.task.observe_first_state(dummy_sim)
 
         # check engine as expected
-        self.assertAlmostEqual(self.task.THROTTLE_CMD, dummy_sim[prp.throttle_cmd])
-        self.assertAlmostEqual(self.task.MIXTURE_CMD, dummy_sim[prp.mixture_cmd])
+        self.assertAlmostEqual(self.task.THROTTLE_CMD,
+                               dummy_sim[prp.throttle_cmd])
+        self.assertAlmostEqual(self.task.MIXTURE_CMD,
+                               dummy_sim[prp.mixture_cmd])
         self.assertAlmostEqual(1.0, dummy_sim[prp.engine_running])
 
     def test_task_step_correct_return_types(self):
@@ -216,7 +223,8 @@ class TestHeadingControlTask(unittest.TestCase):
         steps = 1
         _ = self.task.observe_first_state(sim)
 
-        state, reward, is_terminal, info = self.task.task_step(sim, self.dummy_action, steps)
+        state, reward, is_terminal, info = self.task.task_step(
+            sim, self.dummy_action, steps)
 
         self.assertIsInstance(state, tuple)
         self.assertEqual(len(state), len(self.task.state_variables))
@@ -230,7 +238,8 @@ class TestHeadingControlTask(unittest.TestCase):
         steps = 1
         _ = self.task.observe_first_state(sim)
 
-        _, reward_scalar, _, info = self.task.task_step(sim, self.dummy_action, steps)
+        _, reward_scalar, _, info = self.task.task_step(
+            sim, self.dummy_action, steps)
         reward_object = info['reward']
 
         self.assertIsInstance(reward_object, rewards.Reward)
@@ -253,7 +262,8 @@ class TestHeadingControlTask(unittest.TestCase):
         sim[prp.sim_time_s] = terminal_time
         steps = 1
 
-        _, _, is_terminal, _ = self.task.task_step(sim, self.dummy_action, steps)
+        _, _, is_terminal, _ = self.task.task_step(
+            sim, self.dummy_action, steps)
 
         self.assertTrue(is_terminal)
 
@@ -264,7 +274,8 @@ class TestHeadingControlTask(unittest.TestCase):
         sim[prp.sim_time_s] = terminal_time
         steps = 1
 
-        _, _, is_terminal, _ = self.task.task_step(sim, self.dummy_action, steps)
+        _, _, is_terminal, _ = self.task.task_step(
+            sim, self.dummy_action, steps)
 
         self.assertTrue(is_terminal)
 
@@ -278,10 +289,12 @@ class TestHeadingControlTask(unittest.TestCase):
                                   positive_rewards=positive_reward)
             initial_state_sim = self.get_initial_state_sim(task)
             _ = task.observe_first_state(initial_state_sim)
-            final_state_sim = self.get_perfect_state_sim(task, time_terminal=True)
+            final_state_sim = self.get_perfect_state_sim(
+                task, time_terminal=True)
             sim = TransitioningSimStub(initial_state_sim, final_state_sim)
 
-            state, reward, done, info = task.task_step(sim, self.dummy_action, 1)
+            state, reward, done, info = task.task_step(
+                sim, self.dummy_action, 1)
 
             if positive_reward:
                 expected_reward = self.PERFECT_POSITIVE_REWARD
@@ -293,13 +306,16 @@ class TestHeadingControlTask(unittest.TestCase):
     def test_task_step_correct_non_terminal_reward_optimal_behaviour_no_shaping(self):
         for positive_reward in (True, False):
             self.setUp()
-            task = self.make_task(shaping_type=Shaping.STANDARD, positive_rewards=positive_reward)
+            task = self.make_task(
+                shaping_type=Shaping.STANDARD, positive_rewards=positive_reward)
             initial_state_sim = self.get_initial_state_sim(task)
             _ = task.observe_first_state(initial_state_sim)
-            final_state_sim = self.get_perfect_state_sim(task, time_terminal=False)
+            final_state_sim = self.get_perfect_state_sim(
+                task, time_terminal=False)
             sim = TransitioningSimStub(initial_state_sim, final_state_sim)
 
-            state, reward, done, info = task.task_step(sim, self.dummy_action, 1)
+            state, reward, done, info = task.task_step(
+                sim, self.dummy_action, 1)
 
             if positive_reward:
                 expected_reward = self.PERFECT_POSITIVE_REWARD
@@ -311,10 +327,12 @@ class TestHeadingControlTask(unittest.TestCase):
         for positive_reward in (True, False):
             self.setUp()
             for shaping in (Shaping.STANDARD, Shaping.EXTRA_SEQUENTIAL):
-                task = self.make_task(shaping_type=shaping, positive_rewards=positive_reward)
+                task = self.make_task(
+                    shaping_type=shaping, positive_rewards=positive_reward)
                 initial_state_sim = self.get_initial_state_sim(task)
                 _ = task.observe_first_state(initial_state_sim)
-                final_state_sim = self.get_perfect_state_sim(task, time_terminal=True)
+                final_state_sim = self.get_perfect_state_sim(
+                    task, time_terminal=True)
                 sim = TransitioningSimStub(initial_state_sim, final_state_sim)
 
                 _, _, _, info = task.task_step(sim, self.dummy_action, 1)
@@ -324,12 +342,14 @@ class TestHeadingControlTask(unittest.TestCase):
                     expected_reward = self.PERFECT_POSITIVE_REWARD
                 else:
                     expected_reward = self.PERFECT_POSITIVE_REWARD - 1
-                self.assertAlmostEqual(expected_reward, reward_obj.assessment_reward())
+                self.assertAlmostEqual(
+                    expected_reward, reward_obj.assessment_reward())
 
     def test_task_step_out_of_bounds_altitude_reward_override(self):
         for positive_reward in (True, False):
             self.setUp()
-            task = self.make_task(shaping_type=Shaping.STANDARD, positive_rewards=positive_reward)
+            task = self.make_task(
+                shaping_type=Shaping.STANDARD, positive_rewards=positive_reward)
             bad_altitude = sys.float_info.max
             sim = self.get_transitioning_sim(task,
                                              steps_terminal=False,
@@ -338,12 +358,14 @@ class TestHeadingControlTask(unittest.TestCase):
                                              track_error_deg=0.,
                                              sideslip_deg=0.)
 
-            _, reward_scalar, _, info = task.task_step(sim, self.dummy_action, 1)
+            _, reward_scalar, _, info = task.task_step(
+                sim, self.dummy_action, 1)
             reward_obj: rewards.Reward = info['reward']
 
             if positive_reward:
                 # no reward override when using positive reward; perfect track and terrible alt
-                expected_reward = (self.PERFECT_POSITIVE_REWARD + self.TERRIBLE_POSITIVE_REWARD) / 2
+                expected_reward = (
+                    self.PERFECT_POSITIVE_REWARD + self.TERRIBLE_POSITIVE_REWARD) / 2
             else:
                 # big negative reward for out of bounds
                 expected_reward = -1 + -1. * sim[self.task.steps_left]
@@ -353,7 +375,8 @@ class TestHeadingControlTask(unittest.TestCase):
     def test_task_step_middling_track_otherwise_perfect(self):
         for positive_reward in (True, False):
             self.setUp()
-            task = self.make_task(shaping_type=Shaping.STANDARD, positive_rewards=positive_reward)
+            task = self.make_task(
+                shaping_type=Shaping.STANDARD, positive_rewards=positive_reward)
             perfect_altitude = task._get_target_altitude()
             middling_track = HeadingControlTask.TRACK_ERROR_SCALING_DEG
             sim = self.get_transitioning_sim(task,
@@ -377,7 +400,8 @@ class TestHeadingControlTask(unittest.TestCase):
     def test_task_step_reward_middling_everything(self):
         for positive_reward in (True, False):
             self.setUp()
-            task = self.make_task(shaping_type=Shaping.STANDARD, positive_rewards=positive_reward)
+            task = self.make_task(
+                shaping_type=Shaping.STANDARD, positive_rewards=positive_reward)
             # we get 0.5 reward at scaling distance from target altitude
             middling_altitude = task.INITIAL_ALTITUDE_FT + task.ALTITUDE_SCALING_FT
             middling_track = HeadingControlTask.TRACK_ERROR_SCALING_DEG
@@ -430,20 +454,26 @@ class TestHeadingControlTask(unittest.TestCase):
                                              track_error_deg=perfect_track_error,
                                              sideslip_deg=perfect_sideslip)
 
-            _, reward_scalar, _, info = task.task_step(sim, self.dummy_action, 1)
+            _, reward_scalar, _, info = task.task_step(
+                sim, self.dummy_action, 1)
             reward_obj: rewards.Reward = info['reward']
 
-            expected_shaping_reward = 0  # no improvement (initial state was perfect)
+            # no improvement (initial state was perfect)
+            expected_shaping_reward = 0
             if positive_reward:
                 expected_base_reward = self.PERFECT_POSITIVE_REWARD
-                expected_reward = (expected_base_reward + expected_shaping_reward) / 2
+                expected_reward = (expected_base_reward +
+                                   expected_shaping_reward) / 2
             else:
                 expected_base_reward = self.PERFECT_POSITIVE_REWARD - 1
-                expected_reward = (expected_base_reward + expected_shaping_reward) / 2
+                expected_reward = (expected_base_reward +
+                                   expected_shaping_reward) / 2
             msg = f'positive reward: {positive_reward}'
             self.assertAlmostEqual(expected_reward, reward_scalar, msg=msg)
-            self.assertAlmostEqual(expected_reward, reward_obj.agent_reward(), msg=msg)
-            self.assertAlmostEqual(expected_base_reward, reward_obj.assessment_reward())
+            self.assertAlmostEqual(
+                expected_reward, reward_obj.agent_reward(), msg=msg)
+            self.assertAlmostEqual(expected_base_reward,
+                                   reward_obj.assessment_reward())
 
     def test_task_step_reward_sequential_extra_shaping_all_middling(self):
         for positive_reward in (True, False):
@@ -461,7 +491,8 @@ class TestHeadingControlTask(unittest.TestCase):
                                              track_error_deg=middling_track_error,
                                              sideslip_deg=middling_sideslip)
 
-            _, reward_scalar, _, info = task.task_step(sim, self.dummy_action, 1)
+            _, reward_scalar, _, info = task.task_step(
+                sim, self.dummy_action, 1)
             reward_obj: rewards.Reward = info['reward']
 
             # 2 base reward components are both middling
@@ -470,14 +501,18 @@ class TestHeadingControlTask(unittest.TestCase):
             #   1 middling with a middling dep (.5 * .5)
             expected_shaping_reward = ((.5 - 1) + (.5 ** 2 - 1.)) / 2
             if positive_reward:
-                expected_reward = (expected_base_reward + expected_shaping_reward) / 2
+                expected_reward = (expected_base_reward +
+                                   expected_shaping_reward) / 2
             else:
                 expected_base_reward = expected_base_reward - 1
-                expected_reward = (expected_base_reward + expected_shaping_reward) / 2
+                expected_reward = (expected_base_reward +
+                                   expected_shaping_reward) / 2
             msg = f'positive reward: {positive_reward}'
             self.assertAlmostEqual(expected_reward, reward_scalar, msg=msg)
-            self.assertAlmostEqual(expected_reward, reward_obj.agent_reward(), msg=msg)
-            self.assertAlmostEqual(expected_base_reward, reward_obj.assessment_reward())
+            self.assertAlmostEqual(
+                expected_reward, reward_obj.agent_reward(), msg=msg)
+            self.assertAlmostEqual(expected_base_reward,
+                                   reward_obj.assessment_reward())
 
     def test_task_step_reward_on_terminal_shaping(self):
         for positive_reward in (True, False):
@@ -494,20 +529,26 @@ class TestHeadingControlTask(unittest.TestCase):
                                                  track_error_deg=perfect_track_error,
                                                  sideslip_deg=perfect_sideslip)
 
-                _, reward_scalar, _, info = task.task_step(sim, self.dummy_action, 1)
+                _, reward_scalar, _, info = task.task_step(
+                    sim, self.dummy_action, 1)
                 reward_obj: rewards.Reward = info['reward']
 
-                expected_shaping_reward = -1  # went from perfect (1.) to terminal (0.)
+                # went from perfect (1.) to terminal (0.)
+                expected_shaping_reward = -1
                 if positive_reward:
                     expected_base_reward = self.PERFECT_POSITIVE_REWARD
-                    expected_reward = (expected_base_reward + expected_shaping_reward) / 2
+                    expected_reward = (
+                        expected_base_reward + expected_shaping_reward) / 2
                 else:
                     expected_base_reward = self.PERFECT_POSITIVE_REWARD - 1
-                    expected_reward = (expected_base_reward + expected_shaping_reward) / 2
+                    expected_reward = (
+                        expected_base_reward + expected_shaping_reward) / 2
                 msg = f'positive reward: {positive_reward}'
                 self.assertAlmostEqual(expected_reward, reward_scalar, msg=msg)
-                self.assertAlmostEqual(expected_reward, reward_obj.agent_reward(), msg=msg)
-                self.assertAlmostEqual(expected_base_reward, reward_obj.assessment_reward())
+                self.assertAlmostEqual(
+                    expected_reward, reward_obj.agent_reward(), msg=msg)
+                self.assertAlmostEqual(
+                    expected_base_reward, reward_obj.assessment_reward())
 
 
 class TestTurnHeadingControlTask(TestHeadingControlTask):

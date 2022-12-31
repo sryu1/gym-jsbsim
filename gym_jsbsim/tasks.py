@@ -210,13 +210,17 @@ class FlightTask(Task, ABC):
         ...
 
     def get_state_space(self) -> gym.Space:
-        state_lows = np.array([state_var.min for state_var in self.state_variables])
-        state_highs = np.array([state_var.max for state_var in self.state_variables])
+        state_lows = np.array(
+            [state_var.min for state_var in self.state_variables])
+        state_highs = np.array(
+            [state_var.max for state_var in self.state_variables])
         return gym.spaces.Box(low=state_lows, high=state_highs, dtype='float')
 
     def get_action_space(self) -> gym.Space:
-        action_lows = np.array([act_var.min for act_var in self.action_variables])
-        action_highs = np.array([act_var.max for act_var in self.action_variables])
+        action_lows = np.array(
+            [act_var.min for act_var in self.action_variables])
+        action_highs = np.array(
+            [act_var.max for act_var in self.action_variables])
         return gym.spaces.Box(low=action_lows, high=action_highs, dtype='float')
 
 
@@ -363,7 +367,8 @@ class HeadingControlTask(FlightTask):
         # terminate when time >= max, but use math.isclose() for float equality test
         terminal_step = sim[self.steps_left] <= 0
         state_quality = sim[self.last_assessment_reward]
-        state_out_of_bounds = state_quality < self.MIN_STATE_QUALITY  # TODO: issues if sequential?
+        # TODO: issues if sequential?
+        state_out_of_bounds = state_quality < self.MIN_STATE_QUALITY
         return terminal_step or state_out_of_bounds or self._altitude_out_of_bounds(sim)
 
     def _altitude_out_of_bounds(self, sim: Simulation) -> bool:
@@ -412,7 +417,8 @@ class TurnHeadingControlTask(HeadingControlTask):
 
     def get_initial_conditions(self) -> [Dict[Property, float]]:
         initial_conditions = super().get_initial_conditions()
-        random_heading = random.uniform(prp.heading_deg.min, prp.heading_deg.max)
+        random_heading = random.uniform(
+            prp.heading_deg.min, prp.heading_deg.max)
         initial_conditions[prp.initial_heading_deg] = random_heading
         return initial_conditions
 

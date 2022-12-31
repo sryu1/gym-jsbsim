@@ -4,8 +4,40 @@ JSBGym provides reinforcement learning environments for the control of fixed-win
 
 The package's environments implement the OpenAI Gym interface allowing environments to be created and interacted with in the usual way, e.g.:
 
+## Setup
+
+Firstly, follow the instructions on the [JSBSim](https://github.com/JSBSim-Team/jsbsim) repository to install JSBSim and its libraries.
+
+Confirm that JSBSim is installed from the terminal:
+
+Linux
+
+```console
+$ JSBSim --version
+JSBSim Version: 1.0.0 Jul 16 2018 09:14:35
+```
+
+Windows
+
+```console
+$ cd <JSBSim Directory>
+$ ./JSBSim --version
+JSBSim Version: 1.1.13 [GitHub build 986/commit a09715f01b9e568ce75ca2635ba0a78ce57f7cdd] Dec  3 2022 12:21:06
+```
+
+And confirm that its Python library is correctly installed from a Python interpreter or IDE:
+
+```python
+import jsbsim
+```
+
+After that, go to the folder where JSBSim was installed and copy the entire folder, and paste it into your project folder.
+
+## Getting Started
+
 ```python
 import gym
+import jsbsim
 import jsbgym
 
 env = gym.make(ENV_ID)
@@ -19,26 +51,9 @@ JSBGym optionally provides 3D visualisation of controlled aircraft using the Fli
 
 * [JSBSim](https://github.com/JSBSim-Team/jsbsim) flight dynamics model, including the C++ and Python libraries
 * FlightGear simulator (optional for visualisation)
-* gymnasium, numpy, matplotlib
+* gymn, numpy, matplotlib
 
-## Installation
-
-Firstly, follow the instructions on the [JSBSim](https://github.com/JSBSim-Team/jsbsim) repository to install JSBSim and its libraries.
-
-Confirm that JSBSim is installed from the terminal:
-
-```console
-$ JSBSim --version
-JSBSim Version: 1.0.0 Jul 16 2018 09:14:35
-```
-
-and confirm that its Python library is correctly installed from a Python interpreter or IDE:
-
-```python
-import jsbsim
-```
-
-JSBGym is pip installable using its GitHub:
+gym-jsbsim is pip installable using its GitHub:
 
 ```console
 pip install git+https://github.com/sryu1/gym-jsbsim
@@ -93,7 +108,7 @@ Then, the first call to `env.render(mode='flightgear')` will launch FlightGear a
 
 ## State and Action Space
 
-gym-jsbsim's environments have a continuous state and action space. The state is a 17-tuple:
+JSBGym's environments have a continuous state and action space. The state is a 17-tuple:
 
 ```python
 (name='position/h-sl-ft', description='altitude above mean sea level [ft]', min=-1400, max=85000)

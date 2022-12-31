@@ -24,7 +24,7 @@ class JsbSimEnv(gym.Env):
     metadata = {'render.modes': ['human', 'flightgear']}
 
     def __init__(self, task_type: Type[HeadingControlTask], aircraft: Aircraft = cessna172P,
-                 agent_interaction_freq: int = 5, shaping: Shaping=Shaping.STANDARD):
+                 agent_interaction_freq: int = 5, shaping: Shaping = Shaping.STANDARD):
         """
         Constructor. Inits some internal state, but JsbSimEnv.reset() must be
         called first before interacting with environment.
@@ -69,7 +69,8 @@ class JsbSimEnv(gym.Env):
         if not (action.shape == self.action_space.shape):
             raise ValueError('mismatch between action and action space size')
 
-        state, reward, done, info = self.task.task_step(self.sim, action, self.sim_steps_per_agent_step)
+        state, reward, done, info = self.task.task_step(
+            self.sim, action, self.sim_steps_per_agent_step)
         return np.array(state), reward, done, info
 
     def reset(self):
@@ -82,7 +83,8 @@ class JsbSimEnv(gym.Env):
         if self.sim:
             self.sim.reinitialise(init_conditions)
         else:
-            self.sim = self._init_new_sim(self.JSBSIM_DT_HZ, self.aircraft, init_conditions)
+            self.sim = self._init_new_sim(
+                self.JSBSIM_DT_HZ, self.aircraft, init_conditions)
 
         state = self.task.observe_first_state(self.sim)
 

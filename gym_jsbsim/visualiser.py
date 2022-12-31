@@ -67,7 +67,8 @@ class FigureVisualiser(object):
         self._print_state(sim)
         self._plot_control_states(sim, self.axes)
         self._plot_control_commands(sim, self.axes)
-        plt.pause(self.PLOT_PAUSE_SECONDS)  # voodoo pause needed for figure to update
+        # voodoo pause needed for figure to update
+        plt.pause(self.PLOT_PAUSE_SECONDS)
 
     def close(self):
         if self.figure:
@@ -160,7 +161,8 @@ class FigureVisualiser(object):
 
         # create figure-wide legend
         cmd_entry = (
-            plt.Line2D([], [], color='b', marker='o', ms=10, linestyle='', fillstyle='none'),
+            plt.Line2D([], [], color='b', marker='o', ms=10,
+                       linestyle='', fillstyle='none'),
             'Commanded Position, normalised')
         pos_entry = (plt.Line2D([], [], color='r', marker='+', ms=10, linestyle=''),
                      'Current Position, normalised')
@@ -169,7 +171,8 @@ class FigureVisualiser(object):
                       loc='lower center')
 
         plt.show()
-        plt.pause(self.PLOT_PAUSE_SECONDS)  # voodoo pause needed for figure to appear
+        # voodoo pause needed for figure to appear
+        plt.pause(self.PLOT_PAUSE_SECONDS)
 
         return figure, all_axes
 
@@ -179,7 +182,8 @@ class FigureVisualiser(object):
 
         for prop, y in zip(self.print_props, ys):
             label = str(prop.name)
-            ax.text(self.TEXT_X_POSN_LABEL, y, label, transform=ax.transAxes, **(self.LABEL_TEXT_KWARGS))
+            ax.text(self.TEXT_X_POSN_LABEL, y, label,
+                    transform=ax.transAxes, **(self.LABEL_TEXT_KWARGS))
 
         # print and store empty Text objects which we will rewrite each plot call
         value_texts = []
@@ -196,12 +200,16 @@ class FigureVisualiser(object):
             text.set_text(f'{sim[prop]:.4g}')
 
     def _plot_control_states(self, sim: Simulation, all_axes: AxesTuple):
-        control_surfaces = [prp.aileron_left, prp.elevator, prp.throttle, prp.rudder]
+        control_surfaces = [prp.aileron_left,
+                            prp.elevator, prp.throttle, prp.rudder]
         ail, ele, thr, rud = [sim[control] for control in control_surfaces]
         # plot aircraft control surface positions
-        all_axes.axes_stick.plot([ail], [ele], 'r+', mfc='none', markersize=10, clip_on=False)
-        all_axes.axes_throttle.plot([0], [thr], 'r+', mfc='none', markersize=10, clip_on=False)
-        all_axes.axes_rudder.plot([rud], [0], 'r+', mfc='none', markersize=10, clip_on=False)
+        all_axes.axes_stick.plot(
+            [ail], [ele], 'r+', mfc='none', markersize=10, clip_on=False)
+        all_axes.axes_throttle.plot(
+            [0], [thr], 'r+', mfc='none', markersize=10, clip_on=False)
+        all_axes.axes_rudder.plot(
+            [rud], [0], 'r+', mfc='none', markersize=10, clip_on=False)
 
     def _plot_control_commands(self, sim: Simulation, all_axes: AxesTuple):
         """
@@ -217,8 +225,10 @@ class FigureVisualiser(object):
 
         all_axes.axes_stick.plot([ail_cmd], [ele_cmd], 'bo', mfc='none', markersize=10,
                                  clip_on=False)
-        all_axes.axes_throttle.plot([0], [thr_cmd], 'bo', mfc='none', markersize=10, clip_on=False)
-        all_axes.axes_rudder.plot([rud_cmd], [0], 'bo', mfc='none', markersize=10, clip_on=False)
+        all_axes.axes_throttle.plot(
+            [0], [thr_cmd], 'bo', mfc='none', markersize=10, clip_on=False)
+        all_axes.axes_rudder.plot(
+            [rud_cmd], [0], 'bo', mfc='none', markersize=10, clip_on=False)
 
 
 class FlightGearVisualiser(object):
@@ -255,7 +265,7 @@ class FlightGearVisualiser(object):
         self.figure = FigureVisualiser(sim, print_props)
         if block_until_loaded:
             time.sleep(20)
-            #self._block_until_flightgear_loaded()
+            # self._block_until_flightgear_loaded()
 
     def plot(self, sim: Simulation) -> None:
         """
@@ -265,7 +275,8 @@ class FlightGearVisualiser(object):
 
     @staticmethod
     def _launch_flightgear(aircraft: Aircraft):
-        cmd_line_args = FlightGearVisualiser._create_cmd_line_args(aircraft.flightgear_id)
+        cmd_line_args = FlightGearVisualiser._create_cmd_line_args(
+            aircraft.flightgear_id)
         gym.logger.info(f'Subprocess: "{cmd_line_args}"')
         flightgear_process = subprocess.Popen(
             cmd_line_args,

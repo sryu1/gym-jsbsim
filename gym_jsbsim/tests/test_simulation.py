@@ -86,7 +86,8 @@ class TestSimulation(unittest.TestCase):
         if self.sim:
             self.sim.close()
         sim_frequency = 2
-        self.sim = Simulation(sim_frequency_hz=sim_frequency, aircraft=plane, init_conditions=None)
+        self.sim = Simulation(sim_frequency_hz=sim_frequency,
+                              aircraft=plane, init_conditions=None)
 
         self.assertEqual(self.sim.get_loaded_model_name(), plane.jsbsim_id,
                          msg='JSBSim did not load expected aircraft model: ' +
@@ -157,7 +158,8 @@ class TestSimulation(unittest.TestCase):
         processes = 4
         with multiprocessing.Pool(processes) as pool:
             # N.B. basic_task is a top level function that inits JSBSim
-            future_results = [pool.apply_async(basic_task) for _ in range(processes)]
+            future_results = [pool.apply_async(
+                basic_task) for _ in range(processes)]
             results = [f.get() for f in future_results]
 
         good_exit_code = 0

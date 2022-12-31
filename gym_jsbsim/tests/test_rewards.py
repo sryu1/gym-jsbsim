@@ -33,7 +33,8 @@ class TestReward(unittest.TestCase):
         reward = Reward(base_reward, shaping_reward)
 
         expected_non_shaping_r = sum(base_reward) / len(base_reward)
-        self.assertAlmostEqual(expected_non_shaping_r, reward.assessment_reward())
+        self.assertAlmostEqual(expected_non_shaping_r,
+                               reward.assessment_reward())
 
     def test_shaping_reward_reward(self):
         base_reward = (1, 2)
@@ -41,7 +42,8 @@ class TestReward(unittest.TestCase):
 
         reward = Reward(base_reward, shaping_reward)
 
-        expected_r = sum(base_reward + shaping_reward) / len(base_reward + shaping_reward)
+        expected_r = sum(base_reward + shaping_reward) / \
+            len(base_reward + shaping_reward)
         self.assertAlmostEqual(expected_r, reward.agent_reward())
 
     def test_shaping_reward_non_shaping_reward(self):
@@ -51,7 +53,8 @@ class TestReward(unittest.TestCase):
         reward = Reward(base_reward, shaping_reward)
 
         expected_non_shaping_r = sum(base_reward) / len(base_reward)
-        self.assertAlmostEqual(expected_non_shaping_r, reward.assessment_reward())
+        self.assertAlmostEqual(expected_non_shaping_r,
+                               reward.assessment_reward())
 
     def test_base_reward_is_not_shaping(self):
         base_reward = (1, 2)
@@ -141,7 +144,8 @@ class TestAsymptoticErrorComponent(AbstractTestErrorComponent):
             target_value=target_value)
 
         expected_potential = self.PERFECT_POTENTIAL
-        self.assertAlmostEqual(expected_potential, component.get_potential(state, terminal))
+        self.assertAlmostEqual(
+            expected_potential, component.get_potential(state, terminal))
 
     def test_calculate_get_potential_perfect_state_terminal(self):
         target_value = 0
@@ -154,7 +158,8 @@ class TestAsymptoticErrorComponent(AbstractTestErrorComponent):
             target_value=target_value, shaping=shaping)
 
         expected_potential = component.POTENTIAL_BASED_DIFFERENCE_TERMINAL_VALUE
-        self.assertAlmostEqual(expected_potential, component.get_potential(state, terminal))
+        self.assertAlmostEqual(
+            expected_potential, component.get_potential(state, terminal))
 
     def test_calculate_get_potential_terrible_state(self):
         target_value = 0
@@ -166,7 +171,8 @@ class TestAsymptoticErrorComponent(AbstractTestErrorComponent):
             target_value=target_value)
 
         expected_potential = self.INF_ERROR_POTENTIAL
-        self.assertAlmostEqual(expected_potential, component.get_potential(state, terminal))
+        self.assertAlmostEqual(
+            expected_potential, component.get_potential(state, terminal))
 
     def test_calculate_get_potential_midway_value(self):
         target_value = 0
@@ -178,7 +184,8 @@ class TestAsymptoticErrorComponent(AbstractTestErrorComponent):
             target_value=target_value)
 
         expected_potential = self.SCALING_FACTOR_POTENTIAL
-        self.assertAlmostEqual(expected_potential, component.get_potential(state, terminal))
+        self.assertAlmostEqual(
+            expected_potential, component.get_potential(state, terminal))
 
     def test_calculate_same_perfect_states_shaping_non_terminal(self):
         last_state = self.get_default_perfect_state()
@@ -188,7 +195,8 @@ class TestAsymptoticErrorComponent(AbstractTestErrorComponent):
         component = self.get_component_target_constant(shaping=True)
 
         potential_diff = self.PERFECT_POTENTIAL - self.PERFECT_POTENTIAL
-        self.assertAlmostEqual(potential_diff, component.calculate(state, last_state, terminal))
+        self.assertAlmostEqual(
+            potential_diff, component.calculate(state, last_state, terminal))
 
     def test_calculate_same_perfect_states_shaping_terminal(self):
         last_state = self.get_default_perfect_state()
@@ -197,8 +205,10 @@ class TestAsymptoticErrorComponent(AbstractTestErrorComponent):
 
         component = self.get_component_target_constant(shaping=True)
 
-        potential_diff = component.POTENTIAL_BASED_DIFFERENCE_TERMINAL_VALUE - self.PERFECT_POTENTIAL
-        self.assertAlmostEqual(potential_diff, component.calculate(state, last_state, terminal))
+        potential_diff = component.POTENTIAL_BASED_DIFFERENCE_TERMINAL_VALUE - \
+            self.PERFECT_POTENTIAL
+        self.assertAlmostEqual(
+            potential_diff, component.calculate(state, last_state, terminal))
 
     def test_calculate_improved_state_shaping_non_terminal(self):
         last_state = self.get_default_middling_state()
@@ -208,7 +218,8 @@ class TestAsymptoticErrorComponent(AbstractTestErrorComponent):
         component = self.get_component_target_constant(shaping=True)
 
         potential_diff = self.PERFECT_POTENTIAL - self.SCALING_FACTOR_POTENTIAL
-        self.assertAlmostEqual(potential_diff, component.calculate(state, last_state, terminal))
+        self.assertAlmostEqual(
+            potential_diff, component.calculate(state, last_state, terminal))
 
     def test_calculate_worsening_state_non_terminal(self):
         last_state = self.get_default_perfect_state()
@@ -218,7 +229,8 @@ class TestAsymptoticErrorComponent(AbstractTestErrorComponent):
         component = self.get_component_target_constant()
 
         potential_diff = self.INF_ERROR_POTENTIAL - self.PERFECT_POTENTIAL
-        self.assertAlmostEqual(potential_diff, component.calculate(state, last_state, terminal))
+        self.assertAlmostEqual(
+            potential_diff, component.calculate(state, last_state, terminal))
 
 
 class TestLinearShapingComponent(AbstractTestErrorComponent):
@@ -252,7 +264,8 @@ class TestLinearShapingComponent(AbstractTestErrorComponent):
         component: LinearErrorComponent = self.get_component_target_constant()
         self.assertIsInstance(component, LinearErrorComponent)
 
-        self.assertAlmostEqual(self.PERFECT_POTENTIAL, component.get_potential(state, terminal))
+        self.assertAlmostEqual(self.PERFECT_POTENTIAL,
+                               component.get_potential(state, terminal))
 
     def test_calculate_get_potential_perfect_state_terminal(self):
         state = self.get_default_perfect_state()
@@ -278,7 +291,8 @@ class TestLinearShapingComponent(AbstractTestErrorComponent):
 
         component: LinearErrorComponent = self.get_component_target_constant()
 
-        self.assertAlmostEqual(self.MIDDLE_POTENTIAL, component.get_potential(state, terminal))
+        self.assertAlmostEqual(self.MIDDLE_POTENTIAL,
+                               component.get_potential(state, terminal))
 
     def test_calculate_same_states_non_terminal(self):
         last_state = self.get_default_perfect_state()
@@ -287,7 +301,8 @@ class TestLinearShapingComponent(AbstractTestErrorComponent):
 
         component = self.get_component_target_constant()
 
-        self.assertAlmostEqual(0.0, component.calculate(state, last_state, terminal))
+        self.assertAlmostEqual(
+            0.0, component.calculate(state, last_state, terminal))
 
     def test_calculate_same_states_terminal(self):
         last_state = self.get_default_perfect_state()
@@ -296,8 +311,10 @@ class TestLinearShapingComponent(AbstractTestErrorComponent):
 
         component = self.get_component_target_constant(shaping=True)
 
-        pot_difference = component.POTENTIAL_BASED_DIFFERENCE_TERMINAL_VALUE - self.PERFECT_POTENTIAL
-        self.assertAlmostEqual(pot_difference, component.calculate(state, last_state, terminal))
+        pot_difference = component.POTENTIAL_BASED_DIFFERENCE_TERMINAL_VALUE - \
+            self.PERFECT_POTENTIAL
+        self.assertAlmostEqual(
+            pot_difference, component.calculate(state, last_state, terminal))
 
     def test_calculate_improved_state_shaping_non_terminal(self):
         last_state = self.get_default_middling_state()
@@ -306,7 +323,8 @@ class TestLinearShapingComponent(AbstractTestErrorComponent):
 
         component = self.get_component_target_constant(shaping=True)
 
-        self.assertAlmostEqual(0.5, component.calculate(state, last_state, terminal))
+        self.assertAlmostEqual(
+            0.5, component.calculate(state, last_state, terminal))
 
     def test_calculate_worsening_state_non_terminal(self):
         last_state = self.get_default_perfect_state()
@@ -315,7 +333,8 @@ class TestLinearShapingComponent(AbstractTestErrorComponent):
 
         component = self.get_component_target_constant()
 
-        self.assertAlmostEqual(-1.0, component.calculate(state, last_state, terminal))
+        self.assertAlmostEqual(-1.0,
+                               component.calculate(state, last_state, terminal))
 
 
 class TestAngularAsmyptoticErrorComponent(unittest.TestCase):
@@ -363,7 +382,8 @@ class TestAngularAsmyptoticErrorComponent(unittest.TestCase):
 
         component = self.get_component_constant()
 
-        self.assertAlmostEqual(self.PERFECT_POTENTIAL, component.get_potential(state, terminal))
+        self.assertAlmostEqual(self.PERFECT_POTENTIAL,
+                               component.get_potential(state, terminal))
 
     def test_get_potential_value_scaling_factor_off_target(self):
         target = self.default_target_value
@@ -385,18 +405,24 @@ class TestAngularAsmyptoticErrorComponent(unittest.TestCase):
         value_left_negative = target - 1.5
         value_left_positive = 360 - target - 1.5  # equivalent
         value_right = target + 1.5
-        state_left_of_target_negative = self.dummy_task.get_state(value_left_negative, target)
-        state_left_of_target_positive = self.dummy_task.get_state(value_left_positive, target)
+        state_left_of_target_negative = self.dummy_task.get_state(
+            value_left_negative, target)
+        state_left_of_target_positive = self.dummy_task.get_state(
+            value_left_positive, target)
         state_right_of_target = self.dummy_task.get_state(value_right, target)
         terminal = False
 
         component = self.get_component_constant(target_value=target)
-        potential_left_negative = component.get_potential(state_left_of_target_negative, terminal)
-        potential_left_positive = component.get_potential(state_left_of_target_positive, terminal)
-        potential_right = component.get_potential(state_right_of_target, terminal)
+        potential_left_negative = component.get_potential(
+            state_left_of_target_negative, terminal)
+        potential_left_positive = component.get_potential(
+            state_left_of_target_positive, terminal)
+        potential_right = component.get_potential(
+            state_right_of_target, terminal)
 
         self.assertLess(potential_left_negative, self.PERFECT_POTENTIAL)
         self.assertLess(potential_left_positive, self.PERFECT_POTENTIAL)
         self.assertLess(potential_right, self.PERFECT_POTENTIAL)
-        self.assertAlmostEqual(potential_left_negative, potential_left_positive)
+        self.assertAlmostEqual(potential_left_negative,
+                               potential_left_positive)
         self.assertAlmostEqual(potential_left_negative, potential_right)

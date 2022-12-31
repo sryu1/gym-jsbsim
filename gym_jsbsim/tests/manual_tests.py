@@ -89,7 +89,8 @@ class FlightGearRenderTest(unittest.TestCase):
         self.env.close()
 
     def test_render_steady_level_flight(self):
-        self.setUp(plane=aircraft.cessna172P, task_type=tasks.HeadingControlTask)
+        self.setUp(plane=aircraft.cessna172P,
+                   task_type=tasks.HeadingControlTask)
         agent = ConstantAgent(self.env.action_space)
         render_every = 5
         report_every = 20
@@ -112,7 +113,8 @@ class FlightGearRenderTest(unittest.TestCase):
                     print(f'last reward:\t{reward}')
                     print(f'episode reward:\t{ep_reward}')
                     print(f'thrust:\t{self.env.sim[prp.engine_thrust_lbs]}')
-                    print(f'engine running:\t{self.env.sim[prp.engine_running]}')
+                    print(
+                        f'engine running:\t{self.env.sim[prp.engine_running]}')
                 step_number += 1
             print(f'***\n'
                   f'EPISODE REWARD: {ep_reward}\n'
@@ -124,7 +126,8 @@ class TurnHeadingControlTest(unittest.TestCase):
               task_type: Type[tasks.HeadingControlTask] = tasks.TurnHeadingControlTask,
               shaping: tasks.Shaping = tasks.Shaping.STANDARD):
         self.env = None
-        self.env = JsbSimEnv(aircraft=plane, task_type=task_type, shaping=shaping)
+        self.env = JsbSimEnv(
+            aircraft=plane, task_type=task_type, shaping=shaping)
         self.env.reset()
 
     def tearDown(self):
@@ -156,8 +159,10 @@ class TurnHeadingControlTest(unittest.TestCase):
                     print(f'last reward:\t{reward}')
                     print(f'episode reward:\t{ep_reward}')
                     print(f'gear status:\t{self.env.sim[prp.gear]}')
-                    print(f'thrust eng0:\t{self.env.sim[prp.engine_thrust_lbs]}')
-                    print(f'thrust eng1:\t {self.env.sim[prp.Property("propulsion/engine[1]/thrust-lbs", "")]}')
+                    print(
+                        f'thrust eng0:\t{self.env.sim[prp.engine_thrust_lbs]}')
+                    print(
+                        f'thrust eng1:\t {self.env.sim[prp.Property("propulsion/engine[1]/thrust-lbs", "")]}')
                     print(f'heading:\t{self.env.sim[prp.heading_deg]}')
                     print(f'target heading:\t{self.env.sim[heading_target]}')
                     print('\n')

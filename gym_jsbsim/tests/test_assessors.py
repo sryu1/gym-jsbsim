@@ -52,15 +52,20 @@ class TestAssessorImpl(unittest.TestCase):
             else:
                 expected_shaping_reward = 1 - component.get_return_value()
 
-            expected_non_shaping_reward = expected_shaping_reward  # should be same because not shaping
-            self.assertAlmostEqual(expected_shaping_reward, reward.agent_reward())
-            self.assertAlmostEqual(expected_non_shaping_reward, reward.assessment_reward())
+            # should be same because not shaping
+            expected_non_shaping_reward = expected_shaping_reward
+            self.assertAlmostEqual(
+                expected_shaping_reward, reward.agent_reward())
+            self.assertAlmostEqual(
+                expected_non_shaping_reward, reward.assessment_reward())
 
     def test_calculate_multiple_base_components(self):
         for positive_rewards in (True, False):
             reward_values = [.1, .2, .4]
-            components = tuple(stubs.ConstantRewardComponentStub(val) for val in reward_values)
-            assessor = self.get_assessor(components, positive_rewards=positive_rewards)
+            components = tuple(stubs.ConstantRewardComponentStub(val)
+                               for val in reward_values)
+            assessor = self.get_assessor(
+                components, positive_rewards=positive_rewards)
             state = self.get_dummy_state_class()
 
             reward = assessor.assess(state, state, True)
@@ -68,10 +73,12 @@ class TestAssessorImpl(unittest.TestCase):
             if positive_rewards:
                 comp_values = [cmp.get_return_value() for cmp in components]
             else:
-                comp_values = [cmp.get_return_value() - 1 for cmp in components]
+                comp_values = [
+                    cmp.get_return_value() - 1 for cmp in components]
 
             expected_shaping_reward = sum(comp_values) / len(comp_values)
-            expected_non_shaping_reward = expected_shaping_reward  # should be same because not shaping
+            # should be same because not shaping
+            expected_non_shaping_reward = expected_shaping_reward
             self.assertAlmostEqual(expected_shaping_reward, reward.agent_reward(),
                                    msg=f'positive reward {positive_rewards}')
             self.assertAlmostEqual(expected_non_shaping_reward, reward.assessment_reward(),
@@ -94,12 +101,15 @@ class TestAssessorImpl(unittest.TestCase):
             if positive_rewards:
                 expected_shaping_reward = (sum(base_reward_vals + shaping_reward_vals) /
                                            len(base_reward_vals + shaping_reward_vals))
-                expected_non_shaping_reward = sum(base_reward_vals) / len(base_reward_vals)
+                expected_non_shaping_reward = sum(
+                    base_reward_vals) / len(base_reward_vals)
             else:
-                base_negative_vals = list(base_val - 1 for base_val in base_reward_vals)
+                base_negative_vals = list(
+                    base_val - 1 for base_val in base_reward_vals)
                 expected_shaping_reward = (sum(base_negative_vals + shaping_reward_vals) /
                                            len(base_negative_vals + shaping_reward_vals))
-                expected_non_shaping_reward = sum(base_negative_vals) / len(base_negative_vals)
+                expected_non_shaping_reward = sum(
+                    base_negative_vals) / len(base_negative_vals)
 
             self.assertAlmostEqual(expected_shaping_reward, reward.agent_reward(),
                                    msg=f'positive reward {positive_rewards}')
@@ -121,8 +131,10 @@ class TestContinuousSequentialAssessor(TestAssessorImpl):
             base_component = stubs.ConstantRewardComponentStub(0)
 
             # create two states with a component that will recognise as low and high potential resp.
-            state_low_potential = DummyState(*(1.0 for _ in range(num_state_vars)))
-            state_high_potential = DummyState(*(2.0 for _ in range(num_state_vars)))
+            state_low_potential = DummyState(
+                *(1.0 for _ in range(num_state_vars)))
+            state_high_potential = DummyState(
+                *(2.0 for _ in range(num_state_vars)))
             low_potential, high_potential = 0.5, 1.0
             potential_map = {state_low_potential: low_potential,
                              state_high_potential: high_potential}
@@ -133,26 +145,34 @@ class TestContinuousSequentialAssessor(TestAssessorImpl):
 
             # if non-terminal, expect to see reward equal to potential increase
             terminal = False
-            reward = assessor.assess(state_high_potential, state_low_potential, terminal)
+            reward = assessor.assess(
+                state_high_potential, state_low_potential, terminal)
 
             base_reward_as_configured = base_reward if positive_rewards else base_reward - 1
-            expected_shaping_reward = (base_reward_as_configured + (high_potential - low_potential)) / 2
+            expected_shaping_reward = (
+                base_reward_as_configured + (high_potential - low_potential)) / 2
             expected_non_shaping_reward = base_reward_as_configured
 
             msg = f'positive reward {positive_rewards}'
-            self.assertAlmostEqual(expected_shaping_reward, reward.agent_reward(), msg=msg)
-            self.assertAlmostEqual(expected_non_shaping_reward, reward.assessment_reward(), msg=msg)
+            self.assertAlmostEqual(
+                expected_shaping_reward, reward.agent_reward(), msg=msg)
+            self.assertAlmostEqual(
+                expected_non_shaping_reward, reward.assessment_reward(), msg=msg)
 
             # if terminal, expect to see reward as if terminal step potential was zero
             terminal = True
             terminal_potential = 0.0
-            reward = assessor.assess(state_high_potential, state_low_potential, terminal)
+            reward = assessor.assess(
+                state_high_potential, state_low_potential, terminal)
 
-            expected_shaping_reward = (base_reward_as_configured + (terminal_potential - low_potential)) / 2
+            expected_shaping_reward = (
+                base_reward_as_configured + (terminal_potential - low_potential)) / 2
             expected_non_shaping_reward = base_reward_as_configured
 
-            self.assertAlmostEqual(expected_shaping_reward, reward.agent_reward(), msg=msg)
-            self.assertAlmostEqual(expected_non_shaping_reward, reward.assessment_reward(), msg=msg)
+            self.assertAlmostEqual(
+                expected_shaping_reward, reward.agent_reward(), msg=msg)
+            self.assertAlmostEqual(
+                expected_non_shaping_reward, reward.assessment_reward(), msg=msg)
 
     def assess_reward_for_potential_change_with_dependency(self,
                                                            state_potential: float,
@@ -184,8 +204,10 @@ class TestContinuousSequentialAssessor(TestAssessorImpl):
 
         # make components
         shape_component = stubs.RewardComponentStub(potential_map)
-        dependency_potential_map = {key: dependency_potential for key in potential_map}
-        dependant_shape_component = stubs.RewardComponentStub(dependency_potential_map)
+        dependency_potential_map = {
+            key: dependency_potential for key in potential_map}
+        dependant_shape_component = stubs.RewardComponentStub(
+            dependency_potential_map)
 
         dependency_map = {shape_component: (dependant_shape_component,)}
 
@@ -222,13 +244,15 @@ class TestContinuousSequentialAssessor(TestAssessorImpl):
                                                                              dependent_potential,
                                                                              positive_rewards)
 
-            total_reward_values = (high_potential - low_potential) * dependent_potential
+            total_reward_values = (
+                high_potential - low_potential) * dependent_potential
             # there are 3 components (incl. the dependant component and base
             #   component with value 0) so divide
             averaged_reward_values = total_reward_values / (
-                    len(reward.shaping_reward_elements) + len(reward.base_reward_elements))
+                len(reward.shaping_reward_elements) + len(reward.base_reward_elements))
 
-            self.assertAlmostEqual(averaged_reward_values, reward.agent_reward())
+            self.assertAlmostEqual(
+                averaged_reward_values, reward.agent_reward())
 
     def test_calculate_with_shaping_components_and_dependency_at_one(self):
         for positive_rewards in (True, False):
@@ -240,10 +264,12 @@ class TestContinuousSequentialAssessor(TestAssessorImpl):
                                                                              dependent_potential,
                                                                              positive_rewards)
 
-            total_reward_values = (high_potential - low_potential) * dependent_potential
+            total_reward_values = (
+                high_potential - low_potential) * dependent_potential
             # there are 3 components (incl. the dependant component and base
             #   component with value 0) so divide
             averaged_reward_values = total_reward_values / (
-                    len(reward.shaping_reward_elements) + len(reward.base_reward_elements))
+                len(reward.shaping_reward_elements) + len(reward.base_reward_elements))
 
-            self.assertAlmostEqual(averaged_reward_values, reward.agent_reward())
+            self.assertAlmostEqual(
+                averaged_reward_values, reward.agent_reward())

@@ -26,8 +26,10 @@ class Reward(object):
 
     def agent_reward(self) -> float:
         """ Returns scalar reward value by taking mean of all reward elements """
-        sum_reward = sum(self.base_reward_elements) + sum(self.shaping_reward_elements)
-        num_reward_components = len(self.base_reward_elements) + len(self.shaping_reward_elements)
+        sum_reward = sum(self.base_reward_elements) + \
+            sum(self.shaping_reward_elements)
+        num_reward_components = len(
+            self.base_reward_elements) + len(self.shaping_reward_elements)
         return sum_reward / num_reward_components
 
     def assessment_reward(self) -> float:
@@ -114,7 +116,8 @@ class NormalisedComponent(RewardComponent, ABC):
         """
         if self.potential_difference_based:
             # reward is a potential difference of state, prev_state
-            reward = self.get_potential(state, is_terminal) - self.get_potential(prev_state, False)
+            reward = self.get_potential(
+                state, is_terminal) - self.get_potential(prev_state, False)
         else:
             reward = self.get_potential(state, is_terminal)
         return reward

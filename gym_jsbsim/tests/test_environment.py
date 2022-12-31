@@ -89,7 +89,8 @@ class TestJsbSimEnv(unittest.TestCase):
     def test_do_action(self):
         self.setUp()
         action1 = np.array([0.0] * len(self.env.task.action_variables))
-        action2 = np.linspace(-0.5, .5, num=len(self.env.task.action_variables))
+        action2 = np.linspace(-0.5, .5,
+                              num=len(self.env.task.action_variables))
 
         # do an action and check results
         obs, _, _, _ = self.env.step(action1)
@@ -143,13 +144,15 @@ class TestJsbSimEnv(unittest.TestCase):
         for i in range(25):
             self.env.step(action=self.env.action_space.sample())
             alt_sl = self.env.sim[prp.altitude_sl_ft]
-            alt_gl = self.env.sim[prp.BoundedProperty('position/h-agl-ft', '', 0, 0)]
+            alt_gl = self.env.sim[prp.BoundedProperty(
+                'position/h-agl-ft', '', 0, 0)]
             self.assertAlmostEqual(alt_sl, alt_gl)
 
     def test_render_flightgear_mode(self):
         self.setUp()
         self.env.render(mode='flightgear', flightgear_blocking=False)
-        self.assertIsInstance(self.env.flightgear_visualiser, FlightGearVisualiser)
+        self.assertIsInstance(
+            self.env.flightgear_visualiser, FlightGearVisualiser)
         self.env.close()
 
 
@@ -201,7 +204,8 @@ class TestGymRegistration(unittest.TestCase):
             for plane in (aircraft.cessna172P, aircraft.f15, aircraft.a320):
                 for shaping in (Shaping.STANDARD, Shaping.EXTRA_SEQUENTIAL):
                     for enable_flightgear in (True, False):
-                        id = utils.get_env_id(task, plane, shaping, enable_flightgear)
+                        id = utils.get_env_id(
+                            task, plane, shaping, enable_flightgear)
                         env = gym.make(id)
 
                         if enable_flightgear:

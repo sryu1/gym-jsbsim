@@ -20,6 +20,7 @@ class RandomAgent(Agent):
     The Random object making selection is gym.np_random used by the
     Space.sample() method. Its seed is set by gym.
     """
+
     def __init__(self, action_space: gym.Space):
         self.action_space = action_space
 
