@@ -20,11 +20,17 @@ class JsbSimEnv(gym.Env):
     ATTRIBUTION: this class implements the OpenAI Gym Env API. Method
     docstrings have been adapted or copied from the OpenAI Gym source code.
     """
-    JSBSIM_DT_HZ: int = 60  # JSBSim integration frequency
-    metadata = {'render.modes': ['human', 'flightgear']}
 
-    def __init__(self, task_type: Type[HeadingControlTask], aircraft: Aircraft = cessna172P,
-                 agent_interaction_freq: int = 5, shaping: Shaping = Shaping.STANDARD):
+    JSBSIM_DT_HZ: int = 60  # JSBSim integration frequency
+    metadata = {"render.modes": ["human", "flightgear"]}
+
+    def __init__(
+        self,
+        task_type: Type[HeadingControlTask],
+        aircraft: Aircraft = cessna172P,
+        agent_interaction_freq: int = 5,
+        shaping: Shaping = Shaping.STANDARD,
+    ):
         """
         Constructor. Inits some internal state, but JsbSimEnv.reset() must be
         called first before interacting with environment.
@@ -37,9 +43,11 @@ class JsbSimEnv(gym.Env):
             shaping to use (see HeadingControlTask for options)
         """
         if agent_interaction_freq > self.JSBSIM_DT_HZ:
-            raise ValueError('agent interaction frequency must be less than '
-                             'or equal to JSBSim integration frequency of '
-                             f'{self.JSBSIM_DT_HZ} Hz.')
+            raise ValueError(
+                "agent interaction frequency must be less than "
+                "or equal to JSBSim integration frequency of "
+                f"{self.JSBSIM_DT_HZ} Hz."
+            )
         self.sim: Simulation = None
         self.sim_steps_per_agent_step: int = self.JSBSIM_DT_HZ // agent_interaction_freq
         self.aircraft = aircraft
@@ -67,10 +75,11 @@ class JsbSimEnv(gym.Env):
             info: auxiliary information, e.g. full reward shaping data
         """
         if not (action.shape == self.action_space.shape):
-            raise ValueError('mismatch between action and action space size')
+            raise ValueError("mismatch between action and action space size")
 
         state, reward, done, info = self.task.task_step(
-            self.sim, action, self.sim_steps_per_agent_step)
+            self.sim, action, self.sim_steps_per_agent_step
+        )
         return np.array(state), reward, done, info
 
     def reset(self):
@@ -84,7 +93,8 @@ class JsbSimEnv(gym.Env):
             self.sim.reinitialise(init_conditions)
         else:
             self.sim = self._init_new_sim(
-                self.JSBSIM_DT_HZ, self.aircraft, init_conditions)
+                self.JSBSIM_DT_HZ, self.aircraft, init_conditions
+            )
 
         state = self.task.observe_first_state(self.sim)
 
@@ -94,11 +104,11 @@ class JsbSimEnv(gym.Env):
         return np.array(state)
 
     def _init_new_sim(self, dt, aircraft, initial_conditions):
-        return Simulation(sim_frequency_hz=dt,
-                          aircraft=aircraft,
-                          init_conditions=initial_conditions)
+        return Simulation(
+            sim_frequency_hz=dt, aircraft=aircraft, init_conditions=initial_conditions
+        )
 
-    def render(self, mode='flightgear', flightgear_blocking=True):
+    def render(self, mode="flightgear", flightgear_blocking=True):
         """Renders the environment.
         The set of supported modes varies per environment. (And some
         environments do not support rendering at all.) By convention,
@@ -120,22 +130,23 @@ class JsbSimEnv(gym.Env):
         :param flightgear_blocking: waits for FlightGear to load before
             returning if True, else returns immediately
         """
-        if mode == 'human':
+        if mode == "human":
             if not self.figure_visualiser:
-                self.figure_visualiser = FigureVisualiser(self.sim,
-                                                          self.task.get_props_to_output())
+                self.figure_visualiser = FigureVisualiser(
+                    self.sim, self.task.get_props_to_output()
+                )
             self.figure_visualiser.plot(self.sim)
-        elif mode == 'flightgear':
+        elif mode == "flightgear":
             if not self.flightgear_visualiser:
-                self.flightgear_visualiser = FlightGearVisualiser(self.sim,
-                                                                  self.task.get_props_to_output(),
-                                                                  flightgear_blocking)
+                self.flightgear_visualiser = FlightGearVisualiser(
+                    self.sim, self.task.get_props_to_output(), flightgear_blocking
+                )
             self.flightgear_visualiser.plot(self.sim)
         else:
             super().render(mode=mode)
 
     def close(self):
-        """ Cleans up this environment's objects
+        """Cleans up this environment's objects
 
         Environments automatically close() when garbage collected or when the
         program exits.
@@ -174,16 +185,19 @@ class NoFGJsbSimEnv(JsbSimEnv):
     to open a new socket for every single episode, eventually leading to
     failure of the network.
     """
-    metadata = {'render.modes': ['human']}
+
+    metadata = {"render.modes": ["human"]}
 
     def _init_new_sim(self, dt: float, aircraft: Aircraft, initial_conditions: Dict):
-        return Simulation(sim_frequency_hz=dt,
-                          aircraft=aircraft,
-                          init_conditions=initial_conditions,
-                          allow_flightgear_output=False)
+        return Simulation(
+            sim_frequency_hz=dt,
+            aircraft=aircraft,
+            init_conditions=initial_conditions,
+            allow_flightgear_output=False,
+        )
 
-    def render(self, mode='human', flightgear_blocking=True):
-        if mode == 'flightgear':
-            raise ValueError('flightgear rendering is disabled for this class')
+    def render(self, mode="human", flightgear_blocking=True):
+        if mode == "flightgear":
+            raise ValueError("flightgear rendering is disabled for this class")
         else:
             super().render(mode, flightgear_blocking)
