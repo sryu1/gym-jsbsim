@@ -1,5 +1,7 @@
 # JSBGym
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 JSBGym provides reinforcement learning environments for the control of fixed-wing aircraft using the JSBSim flight dynamics model. JSBGym requires at least Python 3.7.
 
 The package's environments implement the OpenAI Gym interface allowing environments to be created and interacted with in the usual way, e.g.:
