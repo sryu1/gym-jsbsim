@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gym-jsbsim"
+version = "0.1.0"
+authors = [{ name = "sryu1" }]
+license = { text = "MIT" }
+description = "A package of reinforcement learning environments for flight control using the JSBSim flight dynamics model."
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+requires-python = ">=3.7"
+dependencies = ["numpy", "gym", "jsbsim", "matplotlib"]
+
+[project.urls]
+Homepage = "https://github.com/sryu1/gym-jsbsim"
+
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages]
+find = { namespaces = false }
