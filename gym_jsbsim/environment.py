@@ -22,7 +22,7 @@ class JsbSimEnv(gym.Env):
     """
 
     JSBSIM_DT_HZ: int = 60  # JSBSim integration frequency
-    metadata = {"render.modes": ["human", "flightgear"]}
+    metadata = {"render_modes": ["human", "flightgear"], "render_fps": 60}
 
     def __init__(
         self,
@@ -74,13 +74,14 @@ class JsbSimEnv(gym.Env):
             done: whether the episode has ended, in which case further step() calls are undefined
             info: auxiliary information, e.g. full reward shaping data
         """
-        if not (action.shape == self.action_space.shape):
+        if action.shape != self.action_space.shape:
             raise ValueError("mismatch between action and action space size")
 
         state, reward, done, info = self.task.task_step(
             self.sim, action, self.sim_steps_per_agent_step
         )
-        return np.array(state), reward, done, info
+        observation = np.array(state)
+        return observation, reward, done, info
 
     def reset(self):
         """
@@ -101,7 +102,9 @@ class JsbSimEnv(gym.Env):
         if self.flightgear_visualiser:
             self.flightgear_visualiser.configure_simulation_output(self.sim)
 
-        return np.array(state)
+        observation = np.array(state)
+
+        return observation
 
     def _init_new_sim(self, dt, aircraft, initial_conditions):
         return Simulation(
@@ -142,6 +145,12 @@ class JsbSimEnv(gym.Env):
                     self.sim, self.task.get_props_to_output(), flightgear_blocking
                 )
             self.flightgear_visualiser.plot(self.sim)
+        elif self.render_mode is None:
+            gym.logger.warn(
+                "You are calling render method without specifying any render mode. "
+                "You can specify the render_mode at initialization, "
+                f'e.g. gym("{self.spec.id}", render_mode="rgb_array")'
+            )
         else:
             super().render(mode=mode)
 
@@ -186,7 +195,7 @@ class NoFGJsbSimEnv(JsbSimEnv):
     failure of the network.
     """
 
-    metadata = {"render.modes": ["human"]}
+    metadata = {"render_modes": ["human"], "render_fps": 60}
 
     def _init_new_sim(self, dt: float, aircraft: Aircraft, initial_conditions: Dict):
         return Simulation(

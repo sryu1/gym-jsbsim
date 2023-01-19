@@ -279,7 +279,7 @@ class FlightGearVisualiser(object):
     PROTOCOL = "udp"
     LOADED_MESSAGE = "loading cities done"
     FLIGHTGEAR_TIME_FACTOR = 1  # sim speed relative to realtime, higher is faster
-    TIME = "dusk"
+    TIME = "morning"
 
     def __init__(
         self, sim: Simulation, print_props: Tuple[prp.Property], block_until_loaded=True
@@ -345,6 +345,8 @@ class FlightGearVisualiser(object):
         disable_ai_arg = "--disable-ai-traffic"
         disable_live_weather_arg = "--disable-real-weather-fetch"
         time_of_day_arg = "--timeofday=" + FlightGearVisualiser.TIME
+        # airport = "--airport=PHTO"
+        # Increases frame rate for slow devices but has a mountain which may interupt learning
         return (
             flightgear_cmd,
             aircraft_arg,
@@ -353,19 +355,19 @@ class FlightGearVisualiser(object):
             disable_ai_arg,
             disable_live_weather_arg,
             time_of_day_arg,
+            # airport
         )
 
     def _block_until_flightgear_loaded(self):
         while True:
             msg_out = self.flightgear_process.stdout.readline().decode()
             if self.LOADED_MESSAGE in msg_out:
-                gym.logger.info("FlightGear loading complete; entering world")
+                # gym.logger.info("FlightGear loading complete; entering world")
+                print("FlightGear loading complete")
                 break
             else:
-                time.sleep(0.001)
+                time.sleep(0.1)
 
     def close(self):
         if self.flightgear_process:
             self.flightgear_process.kill()
-            timeout_secs = 1
-            self.flightgear_process.wait(timeout=timeout_secs)
